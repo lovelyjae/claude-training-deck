@@ -67,6 +67,7 @@
     <div id="rank" style="font-size:32px;"></div>
     <div class="result-name" id="rName"></div>
     <div class="result-dept" id="rDept"></div>
+    <div id="rPrize" style="margin-top:12px;font-size:18px;font-weight:700;color:#fde047;"></div>
     <div class="result-msg">
       <div class="result-label">💬 AI 사용 첫 성공담</div>
       <div id="rSuccess" style="margin-top:4px;"></div>
@@ -84,12 +85,15 @@
 
 <script>
 const PALETTE = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899','#06b6d4','#10b981'];
-const RANKS = ['🥉 3등','🤔 2등','🥇 1등'];
+const RANKS = [
+  {label:'🎁 당첨 3', prize:'사내에 N명 이상 전파하고 공유하기'},
+  {label:'📬 당첨 2', prize:'1개월 뒤 결과 보고 독촉 메일 받기'},
+  {label:'🎤 당첨 1', prize:'지금 나와서 오늘 교육 소감발표!'}
+];
 
 // ★ 이 배열을 Claude Code가 갈아끼웁니다 ★
 const capsules = [
-  // 예시 (머지 후 실제 데이터로 교체):
-  // { name: "정유경", dept: "파트너지원팀", success: "Claude로 정산 자동화", message: "다들 파이팅!", color: "#ef4444" }
+  // ★ 쉬는시간에 Claude Code가 이 배열을 실제 데이터로 교체합니다 ★
 ];
 
 let remaining = [...capsules];
@@ -144,16 +148,18 @@ function draw(){
     const picked = remaining.splice(idx, 1)[0];
     drawCount++;
 
-    // 등수
-    let rank = '';
-    if(remaining.length===0) rank = RANKS[2]; // 마지막 = 1등
-    else if(drawCount>=capsules.length-1) rank = RANKS[1]; // 두번째 마지막 = 2등
-    else rank = RANKS[0]; // 나머지 3등
+    // 등수: 3등 → 2등 → 1등 순서 (마지막 3명)
+    let rankObj;
+    if(remaining.length===0) rankObj = RANKS[2]; // 마지막 = 1등
+    else if(remaining.length===1) rankObj = RANKS[1]; // 두번째 마지막 = 2등
+    else if(remaining.length===2) rankObj = RANKS[0]; // 세번째 마지막 = 3등
+    else rankObj = null; // 아직 추첨 중
 
     // 결과 표시
     capsuleEl.textContent = '🎊';
     capsuleEl.classList.remove('spin');
-    document.getElementById('rank').textContent = rank;
+    document.getElementById('rank').textContent = rankObj ? rankObj.label : `🎁 ${drawCount}번째 캡슐`;
+    document.getElementById('rPrize').textContent = rankObj ? `🏆 ${rankObj.prize}` : '';
     document.getElementById('rName').textContent = picked.name;
     document.getElementById('rDept').textContent = picked.dept;
     document.getElementById('rSuccess').textContent = picked.success;
