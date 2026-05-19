@@ -951,6 +951,81 @@
 </section>
 
 <!-- SLIDE 16: Node + 설치 -->
+<!-- 사전 설치 — 무엇을 왜 -->
+<section class="slide" id="prereqs">
+  <div class="card">
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="chip chip-cyan">STEP 2 · 사전 설치 체크</span>
+      <span class="chip chip-slate">한 번만 설치</span>
+    </div>
+    <h2 class="slide-h2 mt-3">먼저 깔려있어야 하는 것들 — 무엇을·왜·어디서</h2>
+    <p class="lead mt-2">이미 깔려있으면 건너뛰세요. 확인 명령으로 먼저 체크!</p>
+
+    <table class="t mt-6" style="font-size:13px;">
+      <thead><tr>
+        <th width="14%">도구</th>
+        <th width="22%">어디에 쓰는가</th>
+        <th width="28%">확인 명령 → 이런 결과면 OK</th>
+        <th>없으면 설치</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Node.js</b><br/><span class="small">(필수)</span></td>
+          <td>Claude Code의 엔진. <b>모든 설치의 출발점</b></td>
+          <td><span class="kbd">node --version</span><br/>→ <span class="mono" style="color:#10b981;">v18.x.x</span> 이상</td>
+          <td><b><span class="mono">nodejs.org</span></b> → LTS (초록 버튼)</td>
+        </tr>
+        <tr>
+          <td><b>npm</b><br/><span class="small">(자동)</span></td>
+          <td>Claude Code·스킬 설치 도구</td>
+          <td><span class="kbd">npm --version</span><br/>→ <span class="mono" style="color:#10b981;">10.x</span> 이상</td>
+          <td>Node.js 깔면 자동 포함</td>
+        </tr>
+        <tr>
+          <td><b>Git</b><br/><span class="small">(스킬·MCP용)</span></td>
+          <td>스킬 다운로드, Dooray MCP 설치, GitHub 사용</td>
+          <td><span class="kbd">git --version</span><br/>→ <span class="mono" style="color:#10b981;">git version 2.x.x</span></td>
+          <td>Mac: 자동 안내 / Win: <span class="mono">git-scm.com</span></td>
+        </tr>
+        <tr>
+          <td><b>Python</b><br/><span class="small">(MCP·분석)</span></td>
+          <td>Dooray MCP 설치 마법사, 데이터 분석, Streamlit 대시보드</td>
+          <td><span class="kbd">python3 --version</span><br/>→ <span class="mono" style="color:#10b981;">Python 3.11</span> 이상</td>
+          <td>Mac 기본 / Win: <span class="mono">python.org</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="grid-cards gc-2 mt-5">
+      <div class="tile-emerald">
+        <div class="font-bold">✅ "이 화면이 보이면 OK" 한눈에</div>
+        <div class="pre mt-2" style="font-size:11.5px;">$ node --version
+v22.15.0       <span class="c">← 이런 숫자 = 성공</span>
+
+$ npm --version
+10.9.2
+
+$ git --version
+git version 2.43.0
+
+$ python3 --version
+Python 3.13.0</div>
+      </div>
+      <div class="tile-rose">
+        <div class="font-bold">❌ 이렇게 뜨면 미설치</div>
+        <div class="pre mt-2" style="font-size:11.5px;">$ node --version
+zsh: command not found: node
+<span class="c">또는</span>
+'node'은(는) 내부 또는 외부 명령...
+이 아닙니다</div>
+        <div class="small mt-2">→ 위 표의 "설치" 칸 안내대로 설치 후 <b>터미널 닫고 새로 열기</b></div>
+      </div>
+    </div>
+
+    <div class="quote mt-4">💡 한꺼번에 확인: <span class="kbd">node --version && npm --version && git --version && python3 --version</span><br/>→ 네 줄 다 숫자 나오면 다음 슬라이드로!</div>
+  </div>
+</section>
+
 <section class="slide" id="install">
   <div class="card">
     <span class="chip chip-cyan">STEP 2~3 · Node.js + Claude Code 설치</span>
@@ -1173,10 +1248,12 @@ added 312 packages in 78s  <span class="c"># 성공</span></div>
     <div class="grid-cards gc-2 mt-6">
       <div class="tile">
         <div class="font-bold">① API 토큰 발급</div>
-        <div class="small mt-2">Dooray 우상단 <b>프로필 → 설정 → API 토큰</b> → <b>토큰 생성</b></div>
-        <div class="pre mt-2" style="font-size:11px;">토큰 형식: 조직코드:토큰문자열
-예: ajjt1imxmtj4:tyFuu5obTEGSO...</div>
-        <div class="text-xs mt-2 text-rose-700">🔒 비밀번호와 같음 — 공유 금지</div>
+        <div class="small mt-2"><b><span class="mono">nhnent.dooray.com</span></b> 접속</div>
+        <div class="small mt-2">우상단 프로필 → <b>설정 → API 토큰 → 토큰 생성</b></div>
+        <div class="pre mt-2" style="font-size:11px;">토큰 형식
+조직코드:토큰문자열
+예: ajjt1imxmtj4:tyFuu5...</div>
+        <div class="text-xs mt-2 text-rose-700">🔒 비밀번호와 동일 — 공유 절대 X</div>
       </div>
 
       <div class="tile-brand">
@@ -1185,6 +1262,7 @@ added 312 packages in 78s  <span class="c"># 성공</span></div>
 cd dooray-mcp
 python setup.py</div>
         <div class="small mt-2">→ 토큰 입력 → 의존성 설치 → 연결 검증 → MCP 등록까지 자동</div>
+        <div class="text-xs mt-2 text-slate-500">💡 토큰은 .env에 저장돼서 안전 (다음 슬라이드 참고)</div>
       </div>
 
       <div class="tile-emerald">
@@ -1196,6 +1274,68 @@ python setup.py</div>
     </div>
 
     <div class="quote mt-4">💡 자세한 활용 예시(태스크 생성·댓글·상태 변경)는 <b>Part 4의 Dooray MCP 섹션</b>에서. 일단 설치만 미리 해두세요.</div>
+  </div>
+</section>
+
+<!-- .env 파일 가이드 -->
+<section class="slide" id="env-file">
+  <div class="card">
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="chip chip-rose">보안 · 표준 패턴</span>
+      <span class="chip chip-slate">.env 파일</span>
+    </div>
+    <h2 class="slide-h2 mt-3">.env 파일 — 토큰·비밀번호 안전하게 보관하기</h2>
+    <p class="lead mt-2">코드에 토큰을 직접 박지 마세요. <b>"비밀은 .env에"</b>가 업계 표준입니다.</p>
+
+    <div class="grid-cards gc-2 mt-6">
+      <div class="tile-rose">
+        <div class="font-bold">❌ 이렇게 쓰면 안 돼요</div>
+        <div class="pre mt-2" style="font-size:12px;"><span class="c"># script.py</span>
+token = <span class="s">"ajjt1imxmtj4:tyFuu5obTEGSO..."</span>
+requests.get(url, headers={"Authorization": token})</div>
+        <div class="small mt-2">→ GitHub에 푸시되면 <b>전 세계에 토큰 공개</b>. 분당 수십 명이 스캔합니다.</div>
+      </div>
+      <div class="tile-emerald">
+        <div class="font-bold">✅ 이렇게 쓰세요</div>
+        <div class="pre mt-2" style="font-size:12px;"><span class="c"># .env (별도 파일, git 안 올림)</span>
+DOORAY_API_TOKEN=조직코드:토큰값
+
+<span class="c"># script.py</span>
+from dotenv import load_dotenv
+import os
+load_dotenv()
+token = os.getenv(<span class="s">"DOORAY_API_TOKEN"</span>)</div>
+        <div class="small mt-2">→ 토큰은 내 PC에만, 코드는 자유롭게 공유 가능</div>
+      </div>
+    </div>
+
+    <div class="grid-cards gc-3 mt-4">
+      <div class="tile">
+        <div class="font-bold">💡 왜 .env인가?</div>
+        <ul class="text-sm mt-2 space-y-1 text-slate-700">
+          <li>• <b>보안</b>: 코드와 비밀 분리</li>
+          <li>• <b>공유 안전</b>: GitHub·팀에 코드만 공유, 토큰은 각자 .env</li>
+          <li>• <b>환경 분리</b>: 개발/테스트/실서비스 다른 값</li>
+        </ul>
+      </div>
+      <div class="tile">
+        <div class="font-bold">🛠 만드는 법 (Claude에게 부탁)</div>
+        <div class="pre mt-2" style="font-size:11px;">"이 폴더에 .env 파일 만들어줘.
+DOORAY_API_TOKEN 한 줄 넣고,
+.gitignore에 .env 추가해서
+실수로 GitHub 올라가지 않게."</div>
+      </div>
+      <div class="tile-amber">
+        <div class="font-bold">⚠️ 절대 잊지 말 것</div>
+        <ul class="text-sm mt-2 space-y-1">
+          <li>• <span class="mono">.gitignore</span>에 <b>.env</b> 추가 필수</li>
+          <li>• 팀 공유는 <span class="mono">.env.example</span> (값 없는 템플릿)로</li>
+          <li>• 이미 푸시했다면 → 토큰 즉시 재발급</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote mt-4">🎯 Dooray MCP 설치 마법사(<span class="mono">python setup.py</span>)도 내부적으로 .env에 토큰을 저장합니다. 같은 철학이에요.</div>
   </div>
 </section>
 
@@ -2503,7 +2643,7 @@ $ claude /doctor</div>
   const partOf = (id) => {
     if(['cover','instructor','toc','ta','ai-era','materials'].includes(id)) return '인트로';
     if(id.startsWith('part1')||['opening','ai-usage','needs-top5','live-demo','literacy-1','literacy-2','literacy-3','web-vs-code','which-claude','security-1','security-2','security-3'].includes(id)) return '1부 · Part 1 왜 Claude Code인가?';
-    if(id.startsWith('part2')||['terminal','install','install-troubleshoot','first-login','first-chat','skills-install','dooray-mcp-install'].includes(id)) return '1부 · Part 2 설치하기';
+    if(id.startsWith('part2')||['terminal','prereqs','install','install-troubleshoot','first-login','first-chat','skills-install','dooray-mcp-install','env-file'].includes(id)) return '1부 · Part 2 설치하기';
     if(id==='break') return '☕ 쉬는시간';
     if(id.startsWith('part3')||['markdown','structure','skills-concept','token-concept','git-concept'].includes(id)) return '2부 · Part 3 핵심 개념';
     if(id.startsWith('part4')||['open-files','excel','report','mail-basic','mail-html','mail-auto','prompt-tips','scenario-a','scenario-b'].includes(id)) return '2부 · Part 4 실전 활용';
