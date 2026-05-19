@@ -104,8 +104,34 @@
   .ov-card .ov-part{font-size:11px;color:#4f46e5;font-weight:600;margin-top:auto;padding-top:6px;}
   #overview-close{position:fixed;top:14px;right:18px;color:#fff;background:rgba(255,255,255,.15);border:none;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:18px;}
 
+  /* 코드 블록 복사 버튼 */
+  .pre{position:relative;}
+  .pre-copy-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.1);color:#cbd5e1;border:1px solid rgba(255,255,255,.2);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;font-family:'Pretendard',sans-serif;opacity:.4;transition:opacity .15s,background .15s;}
+  .pre:hover .pre-copy-btn{opacity:1;}
+  .pre-copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+  .pre-copy-btn.copied{background:#10b981;color:#fff;border-color:#10b981;opacity:1;}
+
+  /* 강사 리모컨 모드 */
+  body.remote-mode{overflow:auto;}
+  body.remote-mode #deck,body.remote-mode .deck-arrow,body.remote-mode .deck-ctrl,body.remote-mode .deck-progress{display:none !important;}
+  body.remote-mode .nav{position:static;}
+  #remote-panel{display:none;padding:80px 20px 20px;max-width:900px;margin:0 auto;}
+  body.remote-mode #remote-panel{display:block;}
+  #remote-status{background:#0f172a;color:#86efac;padding:14px 18px;border-radius:12px;font-family:'JetBrains Mono',monospace;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  #remote-status .label{color:#64748b;font-size:11px;text-transform:uppercase;}
+  .remote-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+  .remote-slide-btn{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;cursor:pointer;text-align:left;transition:all .15s;font-size:12.5px;}
+  .remote-slide-btn:hover{border-color:#4f46e5;background:#eef2ff;}
+  .remote-slide-btn.current{background:#4f46e5;color:#fff;border-color:#4f46e5;font-weight:700;}
+  .remote-slide-btn .num{font-size:10px;opacity:.6;}
+  .remote-controls{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .remote-controls button{background:#4f46e5;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;}
+  .remote-controls button:hover{background:#4338ca;}
+  .remote-controls button.secondary{background:#e2e8f0;color:#334155;}
+  .remote-controls button.secondary:hover{background:#cbd5e1;}
+
   @media print{
-    .nav,.deck-ctrl,.deck-arrow,.deck-progress,#overview{display:none !important;}
+    .nav,.deck-ctrl,.deck-arrow,.deck-progress,#overview,.pre-copy-btn{display:none !important;}
     body,html{overflow:visible;background:#fff;}
     #deck{position:static;}
     .slide{display:flex !important;position:static !important;page-break-after:always;padding:24px 0;max-height:none;}
@@ -137,6 +163,28 @@
   </span>
 </nav>
 <div class="deck-progress"><div class="deck-progress-bar" id="progress-bar"></div></div>
+
+<!-- 강사 리모컨 패널 (?remote=1 일 때만 표시) -->
+<div id="remote-panel">
+  <div id="remote-status">
+    <span class="label">현재 슬라이드</span>
+    <span id="remote-current">-</span>
+    <span class="label" style="margin-left:auto;">총</span>
+    <span id="remote-total">-</span>
+    <button onclick="remoteOpenMain()" class="secondary" style="margin-left:10px;font-size:12px;padding:6px 12px;background:#fff;color:#0f172a;border:1px solid #cbd5e1;border-radius:6px;cursor:pointer;">🖥 빔 화면 새 창으로 열기</button>
+  </div>
+
+  <div class="remote-controls">
+    <button onclick="remoteGo('prev')">◀ 이전</button>
+    <button onclick="remoteGo('next')">다음 ▶</button>
+    <button onclick="remoteGo('first')" class="secondary">⏮ 처음</button>
+    <button onclick="remoteGo('last')" class="secondary">⏭ 마지막</button>
+  </div>
+
+  <p style="font-size:13px;color:#64748b;margin-bottom:14px;">💡 휴대폰에서 이 페이지 열면 키보드 없이 슬라이드 넘기기 가능. 빔 화면 노트북은 mirror 모드여도 OK.</p>
+
+  <div class="remote-grid" id="remote-grid"></div>
+</div>
 
 <div id="deck">
 
@@ -926,6 +974,68 @@
 </section>
 
 <!-- SLIDE 15: 터미널 -->
+<!-- 터미널 안심 — 두려움 풀기 -->
+<section class="slide" id="terminal-anxiety" style="background:linear-gradient(135deg,#ecfdf5,#ecfeff);">
+  <div class="card">
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="chip chip-emerald">시작 전 한 마디</span>
+    </div>
+    <h2 class="slide-h2 mt-3">"터미널" 무서워하지 마세요</h2>
+    <p class="lead mt-2">검은 화면 + 영어 글자 = 부담스럽지만, 결국 <b>메모장에 명령어 적는 거</b>랑 다르지 않아요.</p>
+
+    <div class="grid-cards gc-3 mt-6">
+      <div class="tile-emerald">
+        <div class="text-2xl">🖱️</div>
+        <div class="font-bold mt-2">3가지만 알면 끝</div>
+        <ul class="text-sm mt-2 space-y-1 text-slate-700">
+          <li>• <span class="kbd">Ctrl+C</span> / <span class="kbd">Cmd+C</span> — 복사</li>
+          <li>• <span class="kbd">Ctrl+V</span> / <span class="kbd">Cmd+V</span> — 붙여넣기</li>
+          <li>• <span class="kbd">Enter</span> — 실행</li>
+        </ul>
+        <div class="small mt-2 text-emerald-700">→ 90%는 복사 + 붙여넣기 + Enter만 합니다.</div>
+      </div>
+      <div class="tile-cyan">
+        <div class="text-2xl">📋</div>
+        <div class="font-bold mt-2">슬라이드 코드 = 복사 버튼</div>
+        <div class="small mt-2">슬라이드의 검은 코드 박스 위에 마우스 올리면 <b>📋 복사</b> 버튼이 나타나요. 클릭만 하면 클립보드에.</div>
+        <div class="text-xs mt-3 text-slate-500">→ 오타 없음. 한 번에 정확하게.</div>
+      </div>
+      <div class="tile-amber">
+        <div class="text-2xl">🚨</div>
+        <div class="font-bold mt-2">빨간 글씨 = 무조건 실패? NO</div>
+        <ul class="text-sm mt-2 space-y-1 text-slate-700">
+          <li>• 노란 글씨(warning) → <b>무시</b></li>
+          <li>• 빨간 글씨(error) → 메시지만 보고 트러블슈팅</li>
+          <li>• 그래도 "added N packages" 보이면 → <b>성공</b></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid-cards gc-2 mt-5">
+      <div class="tile">
+        <div class="font-bold">😱 막힐 때 빠른 탈출</div>
+        <table class="t mt-2" style="font-size:13px;">
+          <tbody>
+            <tr><td><span class="kbd">↑</span> 화살표</td><td>방금 친 명령 다시 불러오기</td></tr>
+            <tr><td><span class="kbd">Tab</span></td><td>파일/폴더명 자동완성</td></tr>
+            <tr><td><span class="kbd">Ctrl+C</span></td><td>실행 중인 명령 강제 중단</td></tr>
+            <tr><td><span class="kbd">clear</span> + Enter</td><td>화면 깨끗하게</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tile-brand">
+        <div class="font-bold">💡 한 줄 마음가짐</div>
+        <div class="text-base mt-3" style="line-height:1.7;">
+          "터미널은 화내지 않아요.<br/>
+          <b>잘못 쳐도 그냥 안 될 뿐</b>이에요.<br/>
+          오타 한 번에 컴퓨터 안 망가집니다."
+        </div>
+        <div class="small mt-3" style="color:#64748b;">→ 일단 쳐보고, 안 되면 다시 시도. 두려움보다 호기심을 우선.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="slide" id="terminal">
   <div class="card">
     <span class="chip chip-cyan">STEP 1 · 터미널 열기</span>
@@ -2643,7 +2753,7 @@ $ claude /doctor</div>
   const partOf = (id) => {
     if(['cover','instructor','toc','ta','ai-era','materials'].includes(id)) return '인트로';
     if(id.startsWith('part1')||['opening','ai-usage','needs-top5','live-demo','literacy-1','literacy-2','literacy-3','web-vs-code','which-claude','security-1','security-2','security-3'].includes(id)) return '1부 · Part 1 왜 Claude Code인가?';
-    if(id.startsWith('part2')||['terminal','prereqs','install','install-troubleshoot','first-login','first-chat','skills-install','dooray-mcp-install','env-file'].includes(id)) return '1부 · Part 2 설치하기';
+    if(id.startsWith('part2')||['terminal-anxiety','terminal','prereqs','install','install-troubleshoot','first-login','first-chat','skills-install','dooray-mcp-install','env-file'].includes(id)) return '1부 · Part 2 설치하기';
     if(id==='break') return '☕ 쉬는시간';
     if(id.startsWith('part3')||['markdown','structure','skills-concept','token-concept','git-concept'].includes(id)) return '2부 · Part 3 핵심 개념';
     if(id.startsWith('part4')||['open-files','excel','report','mail-basic','mail-html','mail-auto','prompt-tips','scenario-a','scenario-b'].includes(id)) return '2부 · Part 4 실전 활용';
@@ -2765,6 +2875,121 @@ $ claude /doctor</div>
   });
 
   window.addEventListener('hashchange', ()=>{ const i=hashIdx(); if(i!==idx) goTo(i); });
+
+  // ======================================================
+  // 코드 블록 복사 버튼 자동 주입
+  // ======================================================
+  document.querySelectorAll('.pre').forEach(pre=>{
+    if(pre.querySelector('.pre-copy-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'pre-copy-btn';
+    btn.textContent = '📋 복사';
+    btn.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      // 텍스트만 추출 (HTML 태그 제거)
+      const text = pre.innerText.replace(/📋 복사\s*$/,'').trim();
+      try{
+        await navigator.clipboard.writeText(text);
+        btn.textContent = '✅ 복사됨';
+        btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent = '📋 복사'; btn.classList.remove('copied'); }, 1500);
+      }catch(err){
+        btn.textContent = '❌ 실패';
+        setTimeout(()=>{ btn.textContent = '📋 복사'; }, 1500);
+      }
+    });
+    pre.appendChild(btn);
+  });
+
+  // ======================================================
+  // 강사 리모컨 (?remote=1) + 메인-리모컨 동기화
+  // ======================================================
+  const REMOTE_KEY = 'deck-current-slide';
+  const params = new URLSearchParams(location.search);
+  const isRemote = params.get('remote') === '1';
+
+  // BroadcastChannel (같은 브라우저 내 창끼리 실시간 통신)
+  const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('deck-sync') : null;
+
+  if(isRemote){
+    // ---- 리모컨 모드 ----
+    document.body.classList.add('remote-mode');
+    const grid = document.getElementById('remote-grid');
+    slides.forEach((s,i)=>{
+      const btn = document.createElement('button');
+      btn.className = 'remote-slide-btn';
+      btn.dataset.idx = i;
+      btn.innerHTML = `<div class="num">${String(i+1).padStart(2,'0')} · ${partOf(s.id)||''}</div><div>${titleOf(s).replace(/\s+/g,' ').slice(0,40)}</div>`;
+      btn.addEventListener('click', ()=>remoteJump(i));
+      grid.appendChild(btn);
+    });
+    document.getElementById('remote-total').textContent = slides.length;
+
+    function updateRemoteUI(i){
+      document.getElementById('remote-current').textContent = `${i+1} / ${slides.length} · ${titleOf(slides[i]).slice(0,30)}`;
+      grid.querySelectorAll('.remote-slide-btn').forEach(b=>{
+        b.classList.toggle('current', parseInt(b.dataset.idx)===i);
+      });
+      const cur = grid.querySelector('.current');
+      if(cur) cur.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+
+    // 초기 상태 복원
+    const saved = parseInt(localStorage.getItem(REMOTE_KEY)||'0');
+    updateRemoteUI(isNaN(saved)?0:saved);
+
+    // 메인 화면에서 슬라이드 변경 신호 수신
+    if(channel){
+      channel.onmessage = (e)=>{
+        if(e.data?.type==='slide-changed') updateRemoteUI(e.data.idx);
+      };
+    }
+    window.addEventListener('storage', (e)=>{
+      if(e.key===REMOTE_KEY){ updateRemoteUI(parseInt(e.newValue)); }
+    });
+
+    // 리모컨에서 메인으로 명령 전송
+    window.remoteJump = (i)=>{
+      localStorage.setItem(REMOTE_KEY, String(i));
+      if(channel) channel.postMessage({type:'goto', idx:i});
+      updateRemoteUI(i);
+    };
+    window.remoteGo = (dir)=>{
+      const cur = parseInt(localStorage.getItem(REMOTE_KEY)||'0');
+      let next = cur;
+      if(dir==='next') next = Math.min(slides.length-1, cur+1);
+      else if(dir==='prev') next = Math.max(0, cur-1);
+      else if(dir==='first') next = 0;
+      else if(dir==='last') next = slides.length-1;
+      remoteJump(next);
+    };
+    window.remoteOpenMain = ()=>{
+      window.open(location.pathname, '_blank');
+    };
+  } else {
+    // ---- 메인 화면 ----
+    // 슬라이드 변경 시 리모컨에 알림
+    const origGoTo = goTo;
+    window.goTo = function(i){
+      origGoTo(i);
+      localStorage.setItem(REMOTE_KEY, String(idx));
+      if(channel) channel.postMessage({type:'slide-changed', idx});
+    };
+    // 리모컨 명령 수신
+    if(channel){
+      channel.onmessage = (e)=>{
+        if(e.data?.type==='goto' && typeof e.data.idx==='number'){
+          if(e.data.idx !== idx) origGoTo(e.data.idx);
+        }
+      };
+    }
+    window.addEventListener('storage', (e)=>{
+      if(e.key===REMOTE_KEY){
+        const i = parseInt(e.newValue);
+        if(!isNaN(i) && i!==idx) origGoTo(i);
+      }
+    });
+  }
 
   render();
 })();
