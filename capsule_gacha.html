@@ -7,30 +7,30 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Pretendard',system-ui,sans-serif;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+  body{font-family:'Pretendard',system-ui,sans-serif;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:16px;}
 
-  h1{font-size:48px;font-weight:800;text-align:center;margin-bottom:8px;}
-  .sub{font-size:18px;color:#a5b4fc;text-align:center;margin-bottom:40px;}
+  h1{font-size:36px;font-weight:800;text-align:center;margin-bottom:4px;}
+  .sub{font-size:15px;color:#a5b4fc;text-align:center;margin-bottom:20px;}
 
   /* 가챠 머신 */
-  .machine{position:relative;width:320px;height:400px;margin:0 auto;}
-  .capsule-display{width:280px;height:280px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.15),transparent);border:4px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:120px;transition:transform .3s;}
+  .machine{position:relative;width:200px;height:200px;margin:0 auto;}
+  .capsule-display{width:180px;height:180px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.15),transparent);border:4px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:80px;transition:transform .3s;}
   .capsule-display.spin{animation:spin 1.5s cubic-bezier(.25,.1,.25,1);}
   @keyframes spin{0%{transform:rotate(0)}50%{transform:rotate(720deg) scale(.7)}100%{transform:rotate(1440deg) scale(1)}}
 
   /* 결과 카드 */
-  .result{display:none;text-align:center;margin-top:24px;animation:popIn .5s ease;}
+  .result{display:none;text-align:center;margin-top:12px;animation:popIn .5s ease;}
   .result.show{display:block;}
   @keyframes popIn{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
-  .result-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:2px solid rgba(255,255,255,.2);border-radius:24px;padding:32px;max-width:480px;margin:0 auto;}
-  .result-name{font-size:36px;font-weight:800;margin-top:12px;}
-  .result-dept{font-size:16px;color:#a5b4fc;margin-top:4px;}
-  .result-msg{font-size:15px;color:#e0e7ff;margin-top:16px;line-height:1.7;text-align:left;background:rgba(255,255,255,.05);padding:16px;border-radius:12px;}
+  .result-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:2px solid rgba(255,255,255,.2);border-radius:20px;padding:20px;max-width:440px;margin:0 auto;}
+  .result-name{font-size:28px;font-weight:800;margin-top:8px;}
+  .result-dept{font-size:14px;color:#a5b4fc;margin-top:2px;}
+  .result-msg{font-size:13px;color:#e0e7ff;margin-top:12px;line-height:1.6;text-align:left;background:rgba(255,255,255,.05);padding:12px;border-radius:10px;}
   .result-label{font-size:12px;color:#94a3b8;margin-top:4px;}
 
   /* 버튼 */
-  .btn{display:inline-block;padding:16px 48px;font-size:20px;font-weight:700;border:none;border-radius:16px;cursor:pointer;transition:all .2s;font-family:inherit;}
-  .btn-start{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 8px 32px rgba(245,158,11,.4);margin-top:32px;}
+  .btn{display:inline-block;padding:12px 36px;font-size:18px;font-weight:700;border:none;border-radius:14px;cursor:pointer;transition:all .2s;font-family:inherit;}
+  .btn-start{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 8px 32px rgba(245,158,11,.4);margin-top:16px;}
   .btn-start:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(245,158,11,.5);}
   .btn-start:active{transform:translateY(0);}
   .btn-next{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);margin-top:16px;font-size:16px;padding:12px 32px;}
@@ -120,6 +120,10 @@ function fireConfetti(){
 }
 
 function draw(){
+  if(drawCount>=3){
+    alert('추첨 완료! 당첨자 3명이 모두 나왔습니다 🎉');
+    return;
+  }
   if(remaining.length===0){
     alert('모든 캡슐을 뽑았습니다!');
     return;
@@ -148,18 +152,14 @@ function draw(){
     const picked = remaining.splice(idx, 1)[0];
     drawCount++;
 
-    // 등수: 3등 → 2등 → 1등 순서 (마지막 3명)
-    let rankObj;
-    if(remaining.length===0) rankObj = RANKS[2]; // 마지막 = 1등
-    else if(remaining.length===1) rankObj = RANKS[1]; // 두번째 마지막 = 2등
-    else if(remaining.length===2) rankObj = RANKS[0]; // 세번째 마지막 = 3등
-    else rankObj = null; // 아직 추첨 중
+    // 당첨 3 → 당첨 2 → 당첨 1 순서로 바로 3명
+    const rankObj = RANKS[drawCount - 1];
 
     // 결과 표시
     capsuleEl.textContent = '🎊';
     capsuleEl.classList.remove('spin');
-    document.getElementById('rank').textContent = rankObj ? rankObj.label : `🎁 ${drawCount}번째 캡슐`;
-    document.getElementById('rPrize').textContent = rankObj ? `🏆 ${rankObj.prize}` : '';
+    document.getElementById('rank').textContent = rankObj.label;
+    document.getElementById('rPrize').textContent = `🏆 ${rankObj.prize}`;
     document.getElementById('rName').textContent = picked.name;
     document.getElementById('rDept').textContent = picked.dept;
     document.getElementById('rSuccess').textContent = picked.success;
