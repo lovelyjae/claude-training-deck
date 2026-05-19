@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎰 AI 캡슐 가챠</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Pretendard',system-ui,sans-serif;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+
+  h1{font-size:48px;font-weight:800;text-align:center;margin-bottom:8px;}
+  .sub{font-size:18px;color:#a5b4fc;text-align:center;margin-bottom:40px;}
+
+  /* 가챠 머신 */
+  .machine{position:relative;width:320px;height:400px;margin:0 auto;}
+  .capsule-display{width:280px;height:280px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.15),transparent);border:4px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:120px;transition:transform .3s;}
+  .capsule-display.spin{animation:spin 1.5s cubic-bezier(.25,.1,.25,1);}
+  @keyframes spin{0%{transform:rotate(0)}50%{transform:rotate(720deg) scale(.7)}100%{transform:rotate(1440deg) scale(1)}}
+
+  /* 결과 카드 */
+  .result{display:none;text-align:center;margin-top:24px;animation:popIn .5s ease;}
+  .result.show{display:block;}
+  @keyframes popIn{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+  .result-card{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);border:2px solid rgba(255,255,255,.2);border-radius:24px;padding:32px;max-width:480px;margin:0 auto;}
+  .result-name{font-size:36px;font-weight:800;margin-top:12px;}
+  .result-dept{font-size:16px;color:#a5b4fc;margin-top:4px;}
+  .result-msg{font-size:15px;color:#e0e7ff;margin-top:16px;line-height:1.7;text-align:left;background:rgba(255,255,255,.05);padding:16px;border-radius:12px;}
+  .result-label{font-size:12px;color:#94a3b8;margin-top:4px;}
+
+  /* 버튼 */
+  .btn{display:inline-block;padding:16px 48px;font-size:20px;font-weight:700;border:none;border-radius:16px;cursor:pointer;transition:all .2s;font-family:inherit;}
+  .btn-start{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 8px 32px rgba(245,158,11,.4);margin-top:32px;}
+  .btn-start:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(245,158,11,.5);}
+  .btn-start:active{transform:translateY(0);}
+  .btn-next{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);margin-top:16px;font-size:16px;padding:12px 32px;}
+  .btn-next:hover{background:rgba(255,255,255,.25);}
+  .btn-reset{background:transparent;color:#64748b;border:1px solid #334155;margin-top:12px;font-size:14px;padding:8px 24px;}
+
+  /* 컨페티 */
+  .confetti{position:fixed;top:-10px;width:10px;height:10px;border-radius:2px;animation:fall linear forwards;pointer-events:none;z-index:100;}
+  @keyframes fall{to{top:110vh;transform:rotate(720deg);}}
+
+  /* 카운터 */
+  .counter{position:fixed;top:20px;right:24px;font-size:14px;color:#64748b;background:rgba(255,255,255,.05);padding:8px 16px;border-radius:12px;}
+
+  /* 무지개 테두리 */
+  .rainbow{animation:rainbow 2s linear infinite;}
+  @keyframes rainbow{
+    0%{border-color:#ef4444}14%{border-color:#f59e0b}28%{border-color:#eab308}
+    42%{border-color:#22c55e}57%{border-color:#3b82f6}71%{border-color:#8b5cf6}
+    85%{border-color:#ec4899}100%{border-color:#ef4444}
+  }
+</style>
+</head>
+<body>
+
+<h1>🎰 AI 캡슐 가챠</h1>
+<div class="sub">캡슐을 돌려 운명의 주인공을 뽑습니다!</div>
+
+<div class="machine">
+  <div class="capsule-display" id="capsule">🎰</div>
+</div>
+
+<div id="result" class="result">
+  <div class="result-card">
+    <div id="rank" style="font-size:32px;"></div>
+    <div class="result-name" id="rName"></div>
+    <div class="result-dept" id="rDept"></div>
+    <div class="result-msg">
+      <div class="result-label">💬 AI 사용 첫 성공담</div>
+      <div id="rSuccess" style="margin-top:4px;"></div>
+      <div class="result-label" style="margin-top:12px;">✉️ 강사·동료에게 한마디</div>
+      <div id="rMessage" style="margin-top:4px;"></div>
+    </div>
+  </div>
+</div>
+
+<button class="btn btn-start" id="btnStart" onclick="draw()">🎰 추첨 시작</button>
+<button class="btn btn-next" id="btnNext" onclick="draw()" style="display:none;">다음 추첨 →</button>
+<button class="btn btn-reset" id="btnReset" onclick="resetAll()" style="display:none;">🔄 전체 초기화</button>
+
+<div class="counter" id="counter"></div>
+
+<script>
+const PALETTE = ['#ef4444','#f59e0b','#22c55e','#3b82f6','#8b5cf6','#ec4899','#06b6d4','#10b981'];
+const RANKS = ['🥉 3등','🤔 2등','🥇 1등'];
+
+// ★ 이 배열을 Claude Code가 갈아끼웁니다 ★
+const capsules = [
+  // 예시 (머지 후 실제 데이터로 교체):
+  // { name: "정유경", dept: "파트너지원팀", success: "Claude로 정산 자동화", message: "다들 파이팅!", color: "#ef4444" }
+];
+
+let remaining = [...capsules];
+let drawCount = 0;
+
+function updateCounter(){
+  document.getElementById('counter').textContent = `남은 캡슐: ${remaining.length} / ${capsules.length}`;
+}
+
+function fireConfetti(){
+  const colors = PALETTE;
+  for(let i=0;i<80;i++){
+    const c = document.createElement('div');
+    c.className='confetti';
+    c.style.left = Math.random()*100+'vw';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.width = (6+Math.random()*8)+'px';
+    c.style.height = (6+Math.random()*8)+'px';
+    c.style.animationDuration = (2+Math.random()*3)+'s';
+    c.style.animationDelay = Math.random()*1.5+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 5000);
+  }
+}
+
+function draw(){
+  if(remaining.length===0){
+    alert('모든 캡슐을 뽑았습니다!');
+    return;
+  }
+
+  const capsuleEl = document.getElementById('capsule');
+  const resultEl = document.getElementById('result');
+  const btnStart = document.getElementById('btnStart');
+  const btnNext = document.getElementById('btnNext');
+  const btnReset = document.getElementById('btnReset');
+
+  // 숨기기
+  resultEl.classList.remove('show');
+  btnNext.style.display='none';
+
+  // 스핀 애니메이션
+  capsuleEl.classList.remove('spin');
+  void capsuleEl.offsetWidth; // reflow
+  capsuleEl.classList.add('spin');
+  capsuleEl.classList.add('rainbow');
+  capsuleEl.textContent = '🎁';
+
+  setTimeout(()=>{
+    // 랜덤 뽑기
+    const idx = Math.floor(Math.random()*remaining.length);
+    const picked = remaining.splice(idx, 1)[0];
+    drawCount++;
+
+    // 등수
+    let rank = '';
+    if(remaining.length===0) rank = RANKS[2]; // 마지막 = 1등
+    else if(drawCount>=capsules.length-1) rank = RANKS[1]; // 두번째 마지막 = 2등
+    else rank = RANKS[0]; // 나머지 3등
+
+    // 결과 표시
+    capsuleEl.textContent = '🎊';
+    capsuleEl.classList.remove('spin');
+    document.getElementById('rank').textContent = rank;
+    document.getElementById('rName').textContent = picked.name;
+    document.getElementById('rDept').textContent = picked.dept;
+    document.getElementById('rSuccess').textContent = picked.success;
+    document.getElementById('rMessage').textContent = picked.message;
+    resultEl.classList.add('show');
+
+    btnStart.style.display='none';
+    btnNext.style.display='inline-block';
+    btnReset.style.display='inline-block';
+    updateCounter();
+    fireConfetti();
+  }, 1800);
+}
+
+function resetAll(){
+  remaining = [...capsules];
+  drawCount = 0;
+  document.getElementById('capsule').textContent = '🎰';
+  document.getElementById('capsule').classList.remove('spin','rainbow');
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('btnStart').style.display='inline-block';
+  document.getElementById('btnNext').style.display='none';
+  document.getElementById('btnReset').style.display='none';
+  updateCounter();
+}
+
+updateCounter();
+</script>
+</body>
+</html>
