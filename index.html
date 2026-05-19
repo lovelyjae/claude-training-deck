@@ -2968,25 +2968,36 @@ $ claude /doctor</div>
     };
   } else {
     // ---- 메인 화면 ----
-    // 슬라이드 변경 시 리모컨에 알림
+    // 슬라이드 변경 시 모든 창에 알림 (리모컨 + 다른 메인 창)
     const origGoTo = goTo;
+    let syncing = false;  // 무한 루프 방지
     window.goTo = function(i){
       origGoTo(i);
+      if(syncing) return;
       localStorage.setItem(REMOTE_KEY, String(idx));
-      if(channel) channel.postMessage({type:'slide-changed', idx});
+      if(channel) channel.postMessage({type:'sync-nav', idx, from:'main'});
     };
-    // 리모컨 명령 수신
+    // 다른 창(리모컨 OR 다른 메인 창)에서 슬라이드 변경 수신
     if(channel){
       channel.onmessage = (e)=>{
-        if(e.data?.type==='goto' && typeof e.data.idx==='number'){
-          if(e.data.idx !== idx) origGoTo(e.data.idx);
+        if(!e.data) return;
+        if((e.data.type==='goto' || e.data.type==='sync-nav') && typeof e.data.idx==='number'){
+          if(e.data.idx !== idx){
+            syncing = true;
+            origGoTo(e.data.idx);
+            syncing = false;
+          }
         }
       };
     }
     window.addEventListener('storage', (e)=>{
       if(e.key===REMOTE_KEY){
         const i = parseInt(e.newValue);
-        if(!isNaN(i) && i!==idx) origGoTo(i);
+        if(!isNaN(i) && i!==idx){
+          syncing = true;
+          origGoTo(i);
+          syncing = false;
+        }
       }
     });
   }
