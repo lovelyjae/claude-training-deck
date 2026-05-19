@@ -99,10 +99,23 @@
   #overview-grid{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
   .ov-card{background:#fff;border-radius:12px;padding:14px;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s;min-height:130px;display:flex;flex-direction:column;justify-content:space-between;}
   .ov-card:hover{transform:translateY(-3px);border-color:#4f46e5;}
-  .ov-card .ov-num{font-size:11px;font-weight:700;color:#64748b;}
+  .ov-card .ov-num{font-size:18px;font-weight:800;color:#4f46e5;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;}
   .ov-card .ov-title{font-size:14px;font-weight:700;color:#0f172a;margin-top:4px;line-height:1.3;}
   .ov-card .ov-part{font-size:11px;color:#4f46e5;font-weight:600;margin-top:auto;padding-top:6px;}
   #overview-close{position:fixed;top:14px;right:18px;color:#fff;background:rgba(255,255,255,.15);border:none;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:18px;}
+
+  /* 슬라이드 번호 배지 */
+  .slide-num-badge{position:absolute;top:14px;right:18px;z-index:5;display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:6px 14px;border-radius:999px;font-weight:800;font-size:14px;cursor:pointer;box-shadow:0 6px 16px -4px rgba(79,70,229,.45);transition:transform .15s,box-shadow .15s;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em;}
+  .slide-num-badge:hover{transform:translateY(-2px);box-shadow:0 10px 24px -6px rgba(79,70,229,.6);}
+  .slide-num-badge .total{opacity:.65;font-weight:600;}
+  .slide-num-badge .label{font-size:10px;font-family:'Pretendard',sans-serif;font-weight:600;letter-spacing:0;opacity:.85;margin-left:2px;}
+  .card{position:relative;}
+
+  /* Jump-to 입력 */
+  .deck-jump{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:999px;padding:4px 10px;}
+  .deck-jump input{background:transparent;border:none;color:#fff;width:42px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;outline:none;}
+  .deck-jump input::placeholder{color:rgba(255,255,255,.4);}
+  .deck-jump-label{font-size:11px;color:#94a3b8;}
 
   /* 코드 블록 복사 버튼 */
   .pre{position:relative;}
@@ -2721,6 +2734,10 @@ $ claude /doctor</div>
   <span class="deck-counter" id="counter">1 / 1</span>
   <button id="next-slide" title="다음 (→ / Space)">▶</button>
   <button id="last-slide" title="마지막 (End)">⏭</button>
+  <div class="deck-jump" title="페이지 번호로 점프">
+    <span class="deck-jump-label">→</span>
+    <input id="jump-input" type="number" min="1" placeholder="번호" />
+  </div>
 </div>
 
 <!-- Overview overlay -->
@@ -2875,6 +2892,41 @@ $ claude /doctor</div>
   });
 
   window.addEventListener('hashchange', ()=>{ const i=hashIdx(); if(i!==idx) goTo(i); });
+
+  // ======================================================
+  // 슬라이드 번호 배지 자동 주입 (각 슬라이드에)
+  // ======================================================
+  slides.forEach((s, i) => {
+    const card = s.querySelector('.card');
+    if (!card || card.querySelector('.slide-num-badge')) return;
+    const badge = document.createElement('div');
+    badge.className = 'slide-num-badge';
+    badge.title = '클릭 = 전체 보기';
+    badge.innerHTML = `<span>${String(i+1).padStart(2,'0')}</span><span class="total">/ ${total}</span><span class="label">전체보기</span>`;
+    badge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openOverview();
+    });
+    card.appendChild(badge);
+  });
+
+  // ======================================================
+  // 페이지 번호 점프 입력
+  // ======================================================
+  const jumpInput = document.getElementById('jump-input');
+  if (jumpInput) {
+    jumpInput.max = String(total);
+    jumpInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const n = parseInt(jumpInput.value, 10);
+        if (!isNaN(n) && n >= 1 && n <= total) {
+          goTo(n - 1);
+          jumpInput.value = '';
+          jumpInput.blur();
+        }
+      }
+    });
+  }
 
   // ======================================================
   // 코드 블록 복사 버튼 자동 주입
